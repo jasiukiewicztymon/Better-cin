@@ -3,31 +3,67 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include<cstdlib>
+#include <sstream>
 
 #include <stdio.h>
 #include <conio.h>
 #include <Windows.h>
 
-/*
-	1. Input the command and next search the command in the map
-	2. Input the args with the help
-*/
-
 char getch(char& ch) {
-	ch = _getch();
+	while (1) {
+		ch = getchar();
+		if (ch >= 32 && ch <= 126) {
+			exit(0);
+		}
+	}
 	return ch;
 }
 
-std::string cin(std::vector<std::string> keys, std::map<std::string, std::vector<std::string>> args) {
+std::string cin(char prefix, std::vector<std::string> keys, std::map<std::string, std::vector<std::string>> args) {
+	const int MIN_BUFFOR_INDEX = 3;
+	
 	std::string output;
-	std::vector<char[256]> words;
-	char ch, word[256];
-	int objindex = 0, arrindex = 0;
+	std::vector<std::string> arr;
+	char ch = 1;
+	int index = 0, arrindex = 0, x, y;
+
+	std::cout << " " << prefix << " ";
+
+	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
+	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (!GetConsoleScreenBufferInfo(hStd, &screenBufferInfo))
+		printf("GetConsoleScreenBufferInfo (%d)\n", GetLastError());
+	x = screenBufferInfo.dwCursorPosition.X;
+	y = screenBufferInfo.dwCursorPosition.Y;
+
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD screen;
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	screen.X = MIN_BUFFOR_INDEX;
+	screen.Y = y;
+	SetConsoleCursorPosition(hOut, screen);
 
 	do {
 		getch(ch);
-		std::cout << ch;
-	} while (true);
+		output += ch;
+
+		if (ch == 'a')
+			system("color a");
+
+		COORD temp = screen;
+
+		screen.X = MIN_BUFFOR_INDEX;
+		SetConsoleCursorPosition(hOut, screen);
+		for (int i = 0; i < output.size() + 4; i++) {
+			std::cout << " ";
+		}
+
+		screen = temp;
+		SetConsoleCursorPosition(hOut, screen);
+
+		std::cout << output;
+	} while (ch != 13);
 
 	return output;
 }

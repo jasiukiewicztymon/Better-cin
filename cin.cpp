@@ -1,69 +1,117 @@
 #include "main.h"
-#include <string>
-#include <vector>
-#include <map>
+
 #include <iostream>
-#include<cstdlib>
+#include <vector>
+#include <string>
+#include <map>
 #include <sstream>
 
-#include <stdio.h>
 #include <conio.h>
+#include <stdio.h>
 #include <Windows.h>
 
-char getch(char& ch) {
-	while (1) {
-		ch = getchar();
-		if (ch >= 32 && ch <= 126) {
-			exit(0);
-		}
-	}
-	return ch;
-}
+void bcin(std::string& output) {
+	char ch = ' ';
 
-std::string cin(char prefix, std::vector<std::string> keys, std::map<std::string, std::vector<std::string>> args) {
-	const int MIN_BUFFOR_INDEX = 3;
-	
-	std::string output;
-	std::vector<std::string> arr;
-	char ch = 1;
-	int index = 0, arrindex = 0, x, y;
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO cbsi;
+    GetConsoleScreenBufferInfo(h, &cbsi);
+    COORD pos = cbsi.dwCursorPosition;
 
-	std::cout << " " << prefix << " ";
+    COORD screen;
 
-	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
-	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (!GetConsoleScreenBufferInfo(hStd, &screenBufferInfo))
-		printf("GetConsoleScreenBufferInfo (%d)\n", GetLastError());
-	x = screenBufferInfo.dwCursorPosition.X;
-	y = screenBufferInfo.dwCursorPosition.Y;
-
-	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD screen;
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	screen.X = MIN_BUFFOR_INDEX;
-	screen.Y = y;
-	SetConsoleCursorPosition(hOut, screen);
+    std::string input = " ", newinput;
+    std::vector<std::string> splitInput;
+    int X = pos.X, Y = pos.Y, minX = pos.X, maxX = pos.X, index = X - minX + 1, wordindex = 0;
+    screen.Y = Y;
+    bool backspace = false, del = false, left = false, right = false, tab = false;
 
 	do {
-		getch(ch);
-		output += ch;
+        int key;
+        if (_kbhit()) {
+            key = _getch();
+            if (key == 224) {
+                do {
+                    key = _getch();
+                } while (key == 224);
+                if (key == 75) {
+                    left = true;
+                }
+                else if (key == 77) {
+                    right = true;
+                }
+                else if (key == 83) {
+                    del = true;
+                }
+            }
+            else {
+                ch = key;
+                if (ch == 8) {
+                    backspace = true;
+                }
+                else if (ch == 9) {
+                    tab = true;
+                }
+                else {
+                    if (ch != 13) {
+                        std::string tempch = "";
+                        tempch += ch;
+                        input.insert(index, tempch);
+                        index++;
+                        maxX++;
+                    }
+                }
+            }
+            screen.X = minX;
+            SetConsoleCursorPosition(h, screen);
 
-		if (ch == 'a')
-			system("color a");
+            std::stringstream ss(input);
+            std::string tempstr;
+            while (ss >> tempstr) {
+                splitInput.emplace_back(tempstr);
+            }
 
-		COORD temp = screen;
+            for (int i = 0; i < splitInput.size(); i++) {
+                for (int j = 0; j < splitInput[i].size() + 1; j++)
+                    std::cout << " ";
+            }
 
-		screen.X = MIN_BUFFOR_INDEX;
-		SetConsoleCursorPosition(hOut, screen);
-		for (int i = 0; i < output.size() + 4; i++) {
-			std::cout << " ";
-		}
+            if (backspace) {
+                if (index > minX + 1) {
+                    input.erase(index - 1, 1);
+                    index--;
+                    maxX--;
+                }
+                backspace = false;
+            }
+            else if (del) {
+                if (index < maxX + 1) {
+                    input.erase(index, 1);
+                    maxX--;
+                }
+                del = false;
+            }
+            else if (left) {
+                if (index > minX + 1) {
+                    index--;
+                }
+                left = false;
+            }
+            else if (right) {
+                if (index < maxX + 1) {
+                    index++;
+                }
+                right = false;
+            }
 
-		screen = temp;
-		SetConsoleCursorPosition(hOut, screen);
+            screen.X = minX;
+            SetConsoleCursorPosition(h, screen);
 
-		std::cout << output;
+            std::cout << input;
+
+            screen.X = index;
+            SetConsoleCursorPosition(h, screen);
+        }
+        splitInput.clear();
 	} while (ch != 13);
-
-	return output;
 }

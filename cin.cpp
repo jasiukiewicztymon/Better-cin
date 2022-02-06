@@ -12,8 +12,10 @@
 #include <Windows.h>
 
 void bcin(std::string& output) {
-    std::cout << "\n";
     char ch = ' ';
+
+    std::string prefix = " >";
+    std::cout << prefix;
 
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO cbsi;
@@ -24,11 +26,11 @@ void bcin(std::string& output) {
 
     std::string input = " ", newinput;
     std::vector<std::string> splitInput;
-    int X = pos.X, Y = pos.Y, minX = pos.X, maxX = pos.X, index = X - minX + 1, wordindex = 0;
+    int X = pos.X, Y = pos.Y, minX = X, maxX = 0, index = 1, wordindex = 0;
     screen.Y = Y;
     bool backspace = false, del = false, left = false, right = false, tab = false;
 
-    std::vector<std::vector<std::string>> templates = {{"cd", "root", "dir", "connect", "ftp"}, {"path", "user", "password", "help"}, {"-f", "-k"}};
+    std::vector<std::vector<std::string>> templates = { {"cd", "root", "dir", "connect", "ftp"}, {"path", "user", "password", "help"}, {"-f", "-k"} };
 
     do {
         int key;
@@ -74,7 +76,7 @@ void bcin(std::string& output) {
             }
 
             if (backspace) {
-                if (index > minX + 1) {
+                if (index >= minX) {
                     input.erase(index - 1, 1);
                     index--;
                     maxX--;
@@ -89,7 +91,7 @@ void bcin(std::string& output) {
                 del = false;
             }
             else if (left) {
-                if (index > minX + 1) {
+                if (index >= minX) {
                     index--;
                 }
                 left = false;
@@ -131,11 +133,13 @@ void bcin(std::string& output) {
                     sizesref.emplace_back(temp);
                     temp.clear();
                 }
-            
+
             temp.emplace_back(sizesref[sizesref.size() - 1][1] + 1);
             temp.emplace_back(input.size());
             sizesref.emplace_back(temp);
             temp.clear();
+
+            int remindex = 0;
 
             for (int i = 0; i < labels.size(); i++) {
                 std::cout << labels[i];
@@ -153,9 +157,10 @@ void bcin(std::string& output) {
                     else {
                         for (int j = 0; j < templates[i - 1].size(); j++) {
                             if (templates[i - 1][j].rfind(labels[i], 0) == 0) {
+                                input.insert(sizesref[i][1], templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()));
                                 std::cout << templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size());
-                                input.insert(index, templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()));
                                 index += templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()).size();
+                                maxX += templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()).size();
                                 tab = false;
                                 break;
                             }
@@ -165,7 +170,7 @@ void bcin(std::string& output) {
                 std::cout << " ";
             }
 
-            screen.X = index;
+            screen.X = index + prefix.size();
             SetConsoleCursorPosition(h, screen);
             sizesref.clear();
         }

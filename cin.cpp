@@ -115,39 +115,61 @@ void bcin(std::string& output) {
             }
             labels.emplace_back(input.substr(start, end - start));
 
-            for (int i = 0; i < labels.size(); i++) {
-                if (i == 0) {
-                    if (index >= 0 && index < labels[i].size() - 1) {
-                        wordindex = 0;
-                        break;
-                    }
+            std::vector<int> temp;
+            std::vector<std::vector<int>> sizesref;
+
+            temp.emplace_back(0);
+            temp.emplace_back(labels[0].size());
+            sizesref.emplace_back(temp);
+            temp.clear();
+
+            if (labels.size() > 1)
+                for (int i = 1; i < labels.size() - 1; i++) {
+                    temp.emplace_back(sizesref[i - 1][1] + 1);
+                    temp.emplace_back(sizesref[i - 1][1] + 1 + labels[i].size());
+                    sizesref.emplace_back(temp);
+                    temp.clear();
                 }
-                else {
-                    if (index >= labels[i].size() && index < labels[i].size() + i) {
-                        wordindex = i;
-                        break;
-                    }
-                }
-            }
+            
+            temp.emplace_back(sizesref[sizesref.size() - 1][1] + 1);
+            temp.emplace_back(input.size());
+            sizesref.emplace_back(temp);
+            temp.clear();
 
             for (int i = 0; i < labels.size(); i++) {
                 std::cout << labels[i];
-                if (i > 0 && i <= templates.size()) {
-                    SetConsoleTextAttribute(h, 8);
-                    for (int j = 0; j < templates[i - 1].size(); j++) {
-                        if (templates[i - 1][j].rfind(labels[i], 0) == 0) {
-                            std::cout << templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size());
-                            break;
+                if (i > 0 && i <= templates.size() && (index >= sizesref[i][0] && index <= sizesref[i][1])) {
+                    if (!tab) {
+                        SetConsoleTextAttribute(h, 8);
+                        for (int j = 0; j < templates[i - 1].size(); j++) {
+                            if (templates[i - 1][j].rfind(labels[i], 0) == 0) {
+                                std::cout << templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size());
+                                break;
+                            }
+                        }
+                        SetConsoleTextAttribute(h, 15);
+                    }
+                    else {
+                        for (int j = 0; j < templates[i - 1].size(); j++) {
+                            if (templates[i - 1][j].rfind(labels[i], 0) == 0) {
+                                std::cout << templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size());
+                                input.insert(index, templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()));
+                                index += templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()).size();
+                                tab = false;
+                                break;
+                            }
                         }
                     }
-                    SetConsoleTextAttribute(h, 15);
                 }
                 std::cout << " ";
             }
 
             screen.X = index;
             SetConsoleCursorPosition(h, screen);
+            sizesref.clear();
         }
         splitInput.clear();
     } while (ch != 13);
+    output = input.substr(1, input.size());
+    std::cout << "\n";
 }

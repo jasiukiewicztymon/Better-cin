@@ -11,10 +11,9 @@
 #include <stdio.h>
 #include <Windows.h>
 
-void bcin(std::string& output) {
+void bcin(std::string& output, std::string prefix, std::vector<std::vector<std::string>> templates) {
     char ch = ' ';
 
-    std::string prefix = " >";
     std::cout << prefix;
 
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -29,8 +28,6 @@ void bcin(std::string& output) {
     int X = pos.X, Y = pos.Y, minX = X, maxX = 0, index = 1, wordindex = 0;
     screen.Y = Y;
     bool backspace = false, del = false, left = false, right = false, tab = false;
-
-    std::vector<std::vector<std::string>> templates = { {"cd", "root", "dir", "connect", "ftp"}, {"path", "user", "password", "help"}, {"-f", "-k"} };
 
     do {
         int key;
@@ -169,6 +166,9 @@ void bcin(std::string& output) {
                 }
                 std::cout << " ";
             }
+
+            if (tab)
+                tab = false;
 
             screen.X = index + prefix.size();
             SetConsoleCursorPosition(h, screen);

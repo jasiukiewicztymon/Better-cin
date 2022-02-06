@@ -5,13 +5,14 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <cstddef>
 
 #include <conio.h>
 #include <stdio.h>
 #include <Windows.h>
 
 void bcin(std::string& output) {
-	char ch = ' ';
+    char ch = ' ';
 
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO cbsi;
@@ -26,7 +27,9 @@ void bcin(std::string& output) {
     screen.Y = Y;
     bool backspace = false, del = false, left = false, right = false, tab = false;
 
-	do {
+    std::vector<std::vector<std::string>> templates = {{"cd", "root", "dir", "connect", "ftp"}, {"path", "user", "password", "help"}, {"-f", "-k"}};
+
+    do {
         int key;
         if (_kbhit()) {
             key = _getch();
@@ -65,15 +68,8 @@ void bcin(std::string& output) {
             screen.X = minX;
             SetConsoleCursorPosition(h, screen);
 
-            std::stringstream ss(input);
-            std::string tempstr;
-            while (ss >> tempstr) {
-                splitInput.emplace_back(tempstr);
-            }
-
-            for (int i = 0; i < splitInput.size(); i++) {
-                for (int j = 0; j < splitInput[i].size() + 1; j++)
-                    std::cout << " ";
+            for (int i = 0; i < input.size() * 10; i++) {
+                std::cout << " ";
             }
 
             if (backspace) {
@@ -107,11 +103,51 @@ void bcin(std::string& output) {
             screen.X = minX;
             SetConsoleCursorPosition(h, screen);
 
-            std::cout << input;
+            std::vector<std::string> labels;
+
+            std::string del = " ";
+            int start = 0;
+            int end = input.find(del);
+            while (end != -1) {
+                labels.emplace_back(input.substr(start, end - start));
+                start = end + del.size();
+                end = input.find(del, start);
+            }
+            labels.emplace_back(input.substr(start, end - start));
+
+            for (int i = 0; i < labels.size(); i++) {
+                if (i == 0) {
+                    if (index >= 0 && index < labels[i].size() - 1) {
+                        wordindex = 0;
+                        break;
+                    }
+                }
+                else {
+                    if (index >= labels[i].size() && index < labels[i].size() + i) {
+                        wordindex = i;
+                        break;
+                    }
+                }
+            }
+
+            for (int i = 0; i < labels.size(); i++) {
+                std::cout << labels[i];
+                if (i > 0 && i <= templates.size()) {
+                    SetConsoleTextAttribute(h, 8);
+                    for (int j = 0; j < templates[i - 1].size(); j++) {
+                        if (templates[i - 1][j].rfind(labels[i], 0) == 0) {
+                            std::cout << templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size());
+                            break;
+                        }
+                    }
+                    SetConsoleTextAttribute(h, 15);
+                }
+                std::cout << " ";
+            }
 
             screen.X = index;
             SetConsoleCursorPosition(h, screen);
         }
         splitInput.clear();
-	} while (ch != 13);
+    } while (ch != 13);
 }

@@ -12,6 +12,7 @@
 #include <Windows.h>
 
 void bcin(std::string& output) {
+    std::cout << "\n";
     char ch = ' ';
 
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);

@@ -25,7 +25,3 @@ int main() {
 
 #### If the choice is not the thing you want type the first letter and it will return a new suggestion 
 ![image](https://user-images.githubusercontent.com/73474137/152681405-756465b2-8451-4021-8c58-bf55b9f931e6.png)
-
-### In case of error change the line 159 and open and issue test not finished
-
-index += templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()).size();

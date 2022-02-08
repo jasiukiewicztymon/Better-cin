@@ -156,7 +156,7 @@ void bcin(std::string& output, std::string prefix, std::vector<std::vector<std::
                             if (templates[i - 1][j].rfind(labels[i], 0) == 0) {
                                 input.insert(sizesref[i][1], templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()));
                                 std::cout << templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size());
-                                index += templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()).size() + labels[i].size() - (index - sizesref[i][0]; //possible bugs out of range test not finished
+                                index += templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()).size() + labels[i].size() - (index - sizesref[i][0]); //possible bugs out of range test not finished
                                 maxX += templates[i - 1][j].substr(labels[i].size(), templates[i - 1][j].size()).size();
                                 tab = false;
                                 break;

@@ -9,12 +9,15 @@ Cpp library for inputs with a place holder that may help the user do the cin
 #include <string>
 #include <vector>
 
-#include "cin.h"
+#include "main.h"
 
 int main() {
-	std::vector<std::vector<std::string>> templates = {{"cd", "root", "test"}, {"other", "choice"}, {"option", "/s"}};
+	std::vector<std::vector<std::string>> templates = { {"cd", "root", "test"}, {"other", "choice"}, {"option", "/s"} };
+	std::vector<std::string> template1 = {"cd", "root", "test", "other", "choice", "option", "/s"};
 	std::string output;
 	bcin(output, " >", templates);
+	std::cout << output << std::endl;
+	bcin(output, " >", template1);
 	std::cout << output;
 }
 ```

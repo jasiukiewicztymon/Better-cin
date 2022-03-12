@@ -2,6 +2,8 @@
 
 Cpp library for inputs with a place holder that may help the user do the cin
 
+- [ ] 1D string array argument
+
 ```cpp
 #include <iostream>
 #include <string>

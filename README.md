@@ -28,3 +28,9 @@ int main() {
 
 #### If the choice is not the thing you want type the first letter and it will return a new suggestion 
 ![image](https://user-images.githubusercontent.com/73474137/152681405-756465b2-8451-4021-8c58-bf55b9f931e6.png)
+
+### Diffrence between 1D array argument and 2D array argument
+
+The 2D array will autocomplete only the numer of word in the text as the length of the array (if the array length is 3 only 3 words will be autocompleted) and it will only autocomplete the first word with the words at index 0 and so on.
+
+The 1D array will autocomplete every word with all the words in the list

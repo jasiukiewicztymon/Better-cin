@@ -7,7 +7,7 @@ Cpp library for inputs with a place holder that may help the user do the cin
 #include <string>
 #include <vector>
 
-#include "main.h"
+#include "cin.h"
 
 int main() {
 	std::vector<std::vector<std::string>> templates = { {"cd", "root", "test"}, {"other", "choice"}, {"option", "/s"} };

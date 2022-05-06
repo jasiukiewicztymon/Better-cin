@@ -1,4 +1,4 @@
-#include "main.h"
+#include "cin.h"
 
 #include <iostream>
 #include <vector>
